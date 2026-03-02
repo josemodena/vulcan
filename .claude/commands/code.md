@@ -19,7 +19,13 @@ components, PRD-backed generation for Direct-tier components.
 2. **Confirm target language** — ask the human which language to use if not already specified.
    Refer to the supported tiers in `CLAUDE.md`. Zig is not supported.
 
-3. **For each Prove component:**
+3. **Generate code for all components.**
+   - **Single component:** generate directly.
+   - **Multiple components:** launch one subagent per component in parallel. Each subagent
+     receives the component name, its tier, and the relevant source (`.dfy` file for Prove,
+     PRD sections for Direct). Wait for all subagents to finish before step 4.
+
+   For each **Prove component** (whether direct or subagent):
    - Read `logic/<component>.dfy` in full.
    - Write production code to `src/<component>.*`.
 
@@ -36,14 +42,14 @@ components, PRD-backed generation for Direct-tier components.
    - No business logic not present in the Dafny spec may be introduced.
    - Annotate each function: `# Implements: logic/<component>.dfy::<MethodName>`
 
-4. **For each Direct component:**
+   For each **Direct component** (whether direct or subagent):
    - Read the relevant PRD sections (operations, invariants, edge cases).
    - Write production code to `src/<component>.*`.
    - Map every PRD operation to a function; every failure mode to an explicit return type.
    - No business logic not described in the PRD may be introduced.
    - Annotate each function: `# Implements: docs/PRD.md §<section>`
 
-5. **Write `docs/TRACE.md`:**
+4. **Write `docs/TRACE.md`** after all components are generated:
 
    | `src/` function | Proof source | PRD requirement |
    |---|---|---|
@@ -53,10 +59,10 @@ components, PRD-backed generation for Direct-tier components.
 
    Every function in `src/` must appear in this table.
 
-6. **Auto-merge is OFF.** Do not commit, merge, or apply changes automatically.
+5. **Auto-merge is OFF.** Do not commit, merge, or apply changes automatically.
    Present the full diff and wait for explicit human approval.
 
-7. **Summarise** — list what was generated, distinguish Prove-backed from Direct-backed
+6. **Summarise** — list what was generated, distinguish Prove-backed from Direct-backed
    functions, and flag any manual review items.
 
 ## Language-Specific Notes

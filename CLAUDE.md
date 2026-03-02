@@ -14,18 +14,21 @@ You do not write production code from assumptions. You follow a strict, sequenti
 
 ### Phase 1: /clarify
 
-Perform a thorough domain analysis and convert the human's idea into a strict, approved specification.
-The scope may be a single component or the entire application.
+Produce a strict, approved PRD through a two-phase process: collaborative brainstorming
+followed by an internal draft-and-review loop.
 
-**You must:**
-- Analyse the problem domain: identify entities, relationships, state space, invariants, and failure modes.
-- Ask 3–5 specific technical questions targeting: state invariants, edge cases, failure modes, and security boundaries.
-- Wait for the human's answers before proceeding.
-- Write the output to `docs/PRD.md` using `templates/PRD_TEMPLATE.md`.
-- Propose a **Verification Scope** (Section 9 of the PRD): a triage table assigning each component a tier:
-  - **Prove** — must go through Dafny verification. Apply to: financial logic, access control,
-    data integrity, state machines with complex transitions, security boundaries, safety-critical behaviour.
-  - **Direct** — goes straight from PRD to code. Apply to: UI, API glue, config, logging, scripts, prototypes.
+**Phase A — Brainstorming dialogue:**
+- Immediately analyse the domain: identify entities, relationships, state space, invariants, and failure modes.
+- Share your analysis and ask clarifying questions iteratively. No fixed question count.
+- Offer expert guidance and flag design decisions that have verification consequences.
+- Continue until the human explicitly signals the brainstorming is finished.
+- The human has the final decision on all design choices.
+
+**Phase B — Internal draft and review:**
+- Draft `docs/PRD.md` using `templates/PRD_TEMPLATE.md`, drawing entirely from the brainstorming record.
+- Launch a Reviewer subagent to validate the draft: completeness, no contradictions, no placeholders,
+  defensible Verification Scope triage in Section 9.
+- Fix any issues raised by the reviewer and re-run until the draft passes.
 - Request explicit human sign-off on both the requirements and the triage before moving to `/prove`.
 
 **You must not:**
@@ -42,6 +45,7 @@ Translate the Prove-tier components from the approved `docs/PRD.md` into mathema
 - Read `docs/PRD.md` in full before writing any logic. Find Section 9 (Verification Scope).
 - Process only the components marked **Prove**. Components marked **Direct** skip this phase entirely.
 - Write Dafny (`.dfy`) specifications to the `logic/` directory using `templates/SPEC_TEMPLATE.md` as a guide.
+  For multiple Prove components, launch one subagent per component in parallel; wait for all before verifying.
 - Run the verifier: `dafny verify logic/*.dfy`
 - If verification fails: analyze the counter-example, explain the failure in plain English, fix the `.dfy` file, and re-run. Repeat until all proofs pass.
 - Produce `docs/PROOF.md` summarising what was proved and any unverified assumptions.
@@ -66,6 +70,8 @@ Generate production code for all components using two paths depending on their t
   verification, then transpile isomorphically from the Dafny spec. No new business logic.
 - For **Direct-tier** components: generate from PRD requirements directly. Map every operation
   to a function; every failure mode to an explicit return type. No new business logic.
+- For multiple components (either tier): launch one subagent per component in parallel;
+  wait for all before assembling `docs/TRACE.md`.
 - Confirm the target language with the human. See **Language Support** below.
 - Write output to `src/`.
 - Provide a traceability summary (`docs/TRACE.md`): a table mapping each `src/` function

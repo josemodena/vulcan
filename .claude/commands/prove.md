@@ -17,13 +17,17 @@ Translate each Prove-tier component from the approved PRD into Dafny and formall
    component marked **Prove**. These are the only components processed in this phase.
    Components marked **Direct** are skipped here — they proceed straight to `/code`.
 
-2. **Write Dafny spec** for each Prove component to `logic/<component-name>.dfy`.
-   Use `templates/SPEC_TEMPLATE.md` as a structural guide:
-   - Map each entity to a Dafny `datatype` or `class`.
-   - Express invariants as `predicate` functions.
-   - Express operations as `method` with `requires` / `ensures` clauses.
-   - Use `ghost` variables where needed for specification-only state.
-   - Add `decreases` clauses for recursive or iterative operations.
+2. **Write Dafny specs.**
+   - **Single component:** write `logic/<component-name>.dfy` directly.
+   - **Multiple components:** launch one subagent per component in parallel. Each subagent
+     receives the relevant PRD sections for its component and writes its `.dfy` file.
+     Wait for all subagents to finish before proceeding to verification.
+   - In every spec, use `templates/SPEC_TEMPLATE.md` as a structural guide:
+     - Map each entity to a Dafny `datatype` or `class`.
+     - Express invariants as `predicate` functions.
+     - Express operations as `method` with `requires` / `ensures` clauses.
+     - Use `ghost` variables where needed for specification-only state.
+     - Add `decreases` clauses for recursive or iterative operations.
 
 3. **Verify** — run the verifier:
    ```bash
