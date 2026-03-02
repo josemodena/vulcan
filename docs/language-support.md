@@ -8,16 +8,18 @@ Full support means:
 - Tests generated using the language's standard testing framework
 - Inline proof annotations linked to verified Dafny methods
 
-| Language | Notes |
-|----------|-------|
-| **Python** | Required. Explicit support for data science and ML workloads: numpy/pandas-compatible type hints, `__debug__`-guarded assertions, `dataclasses`/`NamedTuple` for algebraic types. |
-| TypeScript | Strict mode; type-level encoding of Dafny type constraints. |
-| JavaScript | JSDoc types; targets Node.js and browser environments. |
-| Rust | `Result<T, E>` for error cases; `debug_assert!` for invariants; `enum` for `datatype`. |
-| Go | `(T, error)` returns; struct methods for grouped operations. |
-| Java | Checked exceptions or `Optional<T>`; `assert` in debug mode. |
-| C | `assert.h` for invariants; manual memory management documented in proof annotations. |
-| C++ | RAII patterns; `static_assert` where applicable; `std::expected` (C++23) for error handling. |
+Python is the required default when no language is specified.
+
+| Language |
+|----------|
+| **Python** |
+| TypeScript |
+| JavaScript |
+| Rust |
+| Go |
+| Java |
+| C |
+| C++ |
 
 ## Tier 2 — Standard Support
 
@@ -26,13 +28,13 @@ Standard support means:
 - Best-effort idiomatic output (some constructs may be non-idiomatic)
 - Tests generated; may require minor manual adjustment
 
-| Language | Notes |
-|----------|-------|
-| C# | Natural fit with Dafny (same .NET ecosystem); near-Tier-1 quality. |
-| Kotlin | Sealed classes for `datatype`; coroutines not in scope. |
-| Swift | `Result<T, Error>` for errors; value types preferred. |
-| Scala | Case classes and `Either[E, T]` for algebraic types. |
-| Ruby | Duck typing; invariants documented rather than enforced at runtime. |
+| Language |
+|----------|
+| C# |
+| Kotlin |
+| Swift |
+| Scala |
+| Ruby |
 
 ## Tier 3 — Basic Support
 
