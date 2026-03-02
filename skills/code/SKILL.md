@@ -23,25 +23,29 @@ description: "/code — Implementation from Verified Specification"
 2. **Confirm target language** — ask the human which language to use if not already specified.
    Refer to the supported tiers in `CLAUDE.md`. Zig is not supported.
 
-3. **For each Prove component:**
+3. **Generate code for all components.**
+   - **Single component:** generate directly.
+   - **Multiple components:** launch one subagent per component in parallel. Each subagent
+     receives the component name, its tier, and the relevant source (`.dfy` file for Prove,
+     PRD sections for Direct). Wait for all subagents to finish before step 4.
+
+   For each **Prove component** (whether direct or subagent):
    - Read `logic/<component>.dfy` in full.
    - Write production code to `src/<component>.*`.
    - Map every Dafny `method` to a function; every `requires` clause to an input guard;
      every `ensures` clause to a comment and, where possible, a debug-mode assertion.
    - No business logic not present in the Dafny spec may be introduced.
      If missing logic is found, stop and return to `/prove`.
-   - Annotate each function with a reference to its Dafny source:
-     `# Implements: logic/<component>.dfy::<MethodName>`
+   - Annotate each function: `# Implements: logic/<component>.dfy::<MethodName>`
 
-4. **For each Direct component:**
+   For each **Direct component** (whether direct or subagent):
    - Read the relevant PRD sections (operations, invariants, edge cases).
    - Write production code to `src/<component>.*`.
    - Map every PRD operation to a function; every failure mode to an explicit return type.
    - No business logic not described in the PRD may be introduced.
-   - Annotate each function with a reference to its PRD section:
-     `# Implements: docs/PRD.md §<section>`
+   - Annotate each function: `# Implements: docs/PRD.md §<section>`
 
-5. **Write `docs/TRACE.md`:**
+4. **Write `docs/TRACE.md`** after all components are generated:
 
    | `src/` function | Proof source | PRD requirement |
    |---|---|---|
@@ -51,10 +55,10 @@ description: "/code — Implementation from Verified Specification"
 
    Every function in `src/` must appear in this table. No exceptions.
 
-6. **Auto-merge is OFF.** Do not commit, merge, or apply changes automatically.
+5. **Auto-merge is OFF.** Do not commit, merge, or apply changes automatically.
    Present the full diff and wait for explicit human approval before making any changes.
 
-7. **Summarise.** List what was generated, distinguish Prove-backed from Direct-backed
+6. **Summarise.** List what was generated, distinguish Prove-backed from Direct-backed
    functions, and flag any manual review items.
 
 ## Language-Specific Notes

@@ -1,48 +1,73 @@
 # /clarify — Domain Analysis and Specification
 
-Perform a structured domain analysis of the current task and produce a full PRD,
-including a Verification Scope triage for every component.
+Perform a collaborative domain analysis and produce a full PRD through dialogue,
+including an internally reviewed Verification Scope triage for every component.
 
-## Steps
+---
+
+## Phase A — Brainstorming Dialogue
+
+This phase is an open-ended dialogue. It ends only when the developer explicitly
+signals they are done (e.g. "done", "ready to draft", "proceed").
 
 1. **Read the idea** from the user's prompt. Do not assume anything not stated.
 
-2. **Interrogate.** Ask exactly 3–5 questions. Each question must target one of:
-   - **State invariants** — what must always be true, no matter what?
-   - **Edge cases** — what happens at the boundaries (empty input, max load, concurrent access)?
-   - **Failure modes** — what must never happen? What is the blast radius if it does?
-   - **Security boundaries** — who can read, write, or execute each operation?
-   - **Performance contracts** — are there latency or memory bounds that are non-negotiable?
+2. **Perform a domain analysis immediately.** Before asking anything, identify:
+   - Key entities and their relationships
+   - State space and what transitions are possible
+   - Likely invariants (what must always be true)
+   - Likely failure modes (what must never happen)
+   - Security boundaries and trust levels
 
-3. **Wait.** Do not write any document or code until the human has answered.
+3. **Share your analysis proactively** and ask clarifying questions based on
+   what is genuinely unclear. There is no fixed question count. Ask follow-up
+   questions as new information surfaces. Offer expert commentary — suggest
+   patterns, flag risks, note when a design decision has hard verification
+   consequences.
 
-4. **Draft `docs/PRD.md`** using `templates/PRD_TEMPLATE.md`. Fill every section. Do not leave
-   placeholders. If the idea describes a full application, identify all significant components
-   and document each one. If the idea is too broad for one PRD, propose a decomposition and
-   confirm with the human which unit to start with.
+4. **The developer has the final decision** on every design choice. Your role is
+   to inform and challenge, not to dictate.
 
-5. **Propose Verification Scope (Section 9 of the PRD).** Analyse every component and assign
-   each a tier:
-   - **Prove** — must go through Dafny verification before code is written. Apply to:
-     financial or payment logic, access control and permissions, data integrity guarantees,
-     state machines with complex transitions, external-facing security boundaries,
-     safety-critical behaviour.
-   - **Direct** — goes straight from PRD to code; no Dafny required. Apply to:
-     UI components, API glue and data transformation, configuration loading, logging
-     and monitoring, scripts, prototypes.
+5. **Continue the dialogue** until the developer signals they are finished.
 
-   Fill Section 9 with a table: component, tier, one-line rationale.
+---
 
-6. **Request sign-off.** Present the full PRD to the human:
-   > "PRD written to `docs/PRD.md`. Please review the requirements and the Verification
-   > Scope in Section 9, then reply 'approved' to proceed to `/prove`."
+## Phase B — Internal Draft and Review
 
-7. **Do not proceed** until the human approves both the requirements and the triage.
+This phase runs without developer involvement until the draft passes review.
+
+1. **Draft `docs/PRD.md`** using `templates/PRD_TEMPLATE.md`. Draw entirely from
+   the brainstorming record. Fill every section. Leave no placeholders.
+   - If the idea covers a full application, identify all significant components
+     and document each one.
+   - If the scope is too broad for one PRD, flag this before drafting and ask
+     the developer which unit to start with.
+
+2. **Launch a Reviewer subagent** to evaluate the draft against:
+   - Every decision from the brainstorming is captured — nothing missing,
+     nothing contradicted.
+   - All PRD template sections are complete with no placeholders.
+   - The Verification Scope triage in Section 9 is defensible given the
+     invariants and failure modes agreed during brainstorming.
+   - Edge cases and failure modes in the PRD match what was discussed.
+
+3. **If the reviewer raises issues:** fix the draft and re-run the reviewer.
+   Repeat until the reviewer returns a clean pass.
+
+4. **Request developer sign-off:**
+   > "PRD drafted to `docs/PRD.md` and internally reviewed. Please check the
+   > requirements and the Verification Scope in Section 9, then reply 'approved'
+   > to proceed to `/prove`."
+
+5. **Do not proceed** until the developer approves.
+
+---
 
 ## Notes
 - No code of any kind during this phase.
-- If the human's answers contradict each other, flag the contradiction before drafting.
-- If the human disagrees with a triage assignment, update Section 9 before requesting
-  sign-off again.
-- If a requirement is difficult to express in first-order logic, flag it — it may affect
-  the triage decision.
+- If the developer's answers contradict each other, flag the contradiction
+  before entering Phase B.
+- If the developer disagrees with a triage assignment in Section 9, update
+  the table and re-request approval.
+- If a requirement is difficult to express in first-order logic, flag it —
+  it may affect the triage decision.
