@@ -1,6 +1,6 @@
 ---
 name: code
-description: "Phase 3. Transpiles verified Dafny components and generates PRD-backed code for direct components. Run after /prove passes (or immediately after /clarify if no Prove-tier components exist)."
+description: "/code — Implementation from Verified Specification"
 ---
 
 # Code Protocol

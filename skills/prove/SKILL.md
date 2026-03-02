@@ -1,6 +1,6 @@
 ---
 name: prove
-description: "Phase 2. Reads the Verification Scope from the approved PRD, converts each 'Prove' component into Dafny, and runs the verifier. Run after /clarify is approved."
+description: "/prove — Formal Verification with Dafny"
 ---
 
 # Prove Protocol
@@ -48,3 +48,4 @@ description: "Phase 2. Reads the Verification Scope from the approved PRD, conve
 - The Dafny spec is the authoritative source for any component marked Prove. No business logic
   may exist in `src/` for those components that is not first expressed in `logic/`.
 - If no components are marked Prove, skip this phase and proceed directly to `/code`.
+- If Dafny is not installed, direct the user to run `scripts/install-dafny.sh`.
